@@ -1,10 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
 @Entity()
-export class User {
+export class Student {
 
     @PrimaryGeneratedColumn()
     id: number
+
+    // Unique Column
+    @Column({ unique: true })
+    studentId: string
 
     @Column()
     firstName: string
@@ -13,6 +17,5 @@ export class User {
     lastName: string
 
     @Column()
-    age: number
-
+    socialSecurity: string
 }

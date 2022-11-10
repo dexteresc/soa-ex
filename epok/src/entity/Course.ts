@@ -1,18 +1,20 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
 @Entity()
-export class User {
+export class Course {
 
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    firstName: string
+    courseName: string
 
     @Column()
-    lastName: string
+    courseCode: string
 
     @Column()
-    age: number
+    semester: string
 
+    @Column()
+    alias: string
 }

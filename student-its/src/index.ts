@@ -1,20 +1,40 @@
 import { AppDataSource } from "./data-source"
-import { User } from "./entity/User"
+import { Student } from "./entity/Student"
+// express
+import * as express from "express"
+import * as cors from "cors"
 
 AppDataSource.initialize().then(async () => {
 
-    console.log("Inserting a new user into the database...")
-    const user = new User()
-    user.firstName = "Timber"
-    user.lastName = "Saw"
-    user.age = 25
-    await AppDataSource.manager.save(user)
-    console.log("Saved a new user with id: " + user.id)
+    // Create example student then delete it and log every step
+    const student = new Student()
+    student.firstName = "Test"
+    student.lastName = "Student"
+    student.studentId = "jondoe-0"
+    student.socialSecurity = "1234567890"
+    console.log("Saving student...")
+    await AppDataSource.manager.save(student)
+    console.log("Student saved!")
+    console.log("Deleting student...")
+    await AppDataSource.manager.remove(student)
 
-    console.log("Loading users from the database...")
-    const users = await AppDataSource.manager.find(User)
-    console.log("Loaded users: ", users)
+    const port = 3002
+    const app = express()
 
-    console.log("Here you can setup and run express / fastify / any other framework.")
+    app.use(
+        cors({
+            origin: (origin, callback) => {
+                callback(null, true);
+            }
+        })
+    );
+
+    app.get("/", (req, res) => {
+        res.send("Hello Student-ITS!")
+    })
+
+    app.listen(port, () => {
+        console.log(`Example app listening on port ${port}!`)
+    })
 
 }).catch(error => console.log(error))
