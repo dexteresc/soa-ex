@@ -10,10 +10,14 @@ export class CourseModule {
     courseCode: string
 
     @Column()
-    name: string
+    courseName: string
+
+    @Column()
+    courseModule: string
 
     @Column({
         default: "true"
     })
     active: boolean
 }
+
