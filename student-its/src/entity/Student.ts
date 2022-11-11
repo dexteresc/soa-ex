@@ -6,16 +6,12 @@ export class Student {
     @PrimaryGeneratedColumn()
     id: number
 
-    // Unique Column
     @Column({ unique: true })
     studentId: string
 
-    @Column()
-    firstName: string
-
-    @Column()
-    lastName: string
-
-    @Column()
+    @Column({ unique: true })
     socialSecurity: string
+
+    @Column()
+    name: string
 }
