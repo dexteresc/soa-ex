@@ -1,0 +1,25 @@
+{
+  "name": "soa-ex",
+  "version": "1.0.0",
+  "description": "Repository for the third assignment in the course SOA.",
+  "scripts": {
+    "start": "npm run start --workspace=epok --workspace=ladok --workspace=student-its && npm run dev --workspace=web",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dexteresc/soa-ex.git"
+  },
+  "author": "dexteresc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dexteresc/soa-ex/issues"
+  },
+  "homepage": "https://github.com/dexteresc/soa-ex#readme",
+  "workspaces": [
+    "epok",
+    "ladok",
+    "student-its",
+    "web"
+  ]
+}
