@@ -7,19 +7,13 @@ export class StudyResult {
     id: number
 
     @Column()
-    name: string
-
-    @Column()
     socialSecurity: string
-
-    @Column()
-    email: string;
 
     @Column()
     courseCode: string;
 
     @Column()
-    studyModule: string;
+    courseModule: string;
 
     @Column()
     grade: string;
@@ -28,5 +22,5 @@ export class StudyResult {
     date: string;
 
     @Column()
-    status: string;
+    status: "draft" | "done" | "certified" | "obstacle"
 }
