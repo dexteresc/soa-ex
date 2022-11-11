@@ -1,20 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
 @Entity()
-export class Course {
+export class CourseModule {
 
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    courseName: string
-
-    @Column()
     courseCode: string
 
     @Column()
-    semester: string
+    name: string
 
-    @Column()
-    alias: string
+    @Column({
+        default: "true"
+    })
+    active: boolean
 }
