@@ -9,12 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@date-io/moment": "^2.16.1",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.10.14",
     "@mui/material": "^5.10.14",
     "@mui/x-data-grid": "^5.17.11",
+    "@mui/x-date-pickers": "^5.0.8",
+    "install": "^0.13.0",
+    "moment": "^2.29.4",
+    "npm": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
