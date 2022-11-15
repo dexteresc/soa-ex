@@ -1,0 +1,49 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start everything",
+			"dependsOn": [
+				"npm: dev - web",
+				"npm: start - ladok",
+				"npm: start - epok",
+				"npm: start - student-its"
+			],
+			"problemMatcher": [
+				"$eslint-compact"
+			],
+		},
+		{
+			"type": "npm",
+			"script": "dev",
+			"path": "web",
+			"problemMatcher": [],
+			"label": "npm: dev - web",
+			"detail": "vite"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"path": "ladok",
+			"problemMatcher": [],
+			"label": "npm: start - ladok",
+			"detail": "node"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"path": "epok",
+			"problemMatcher": [],
+			"label": "npm: start - epok",
+			"detail": "node"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"path": "student-its",
+			"problemMatcher": [],
+			"label": "npm: start - student-its",
+			"detail": "node"
+		}
+	]
+}
