@@ -1,84 +1,127 @@
-import { Box, Typography, SelectChangeEvent, Select, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  SelectChangeEvent,
+  Select,
+  MenuItem,
+  Modal,
+  Autocomplete,
+  TextField,
+  IconButton,
+  Button,
+  Paper,
+  SpeedDialIcon,
+  SpeedDial,
+  SpeedDialAction,
+  Backdrop,
+} from "@mui/material";
 import { GridColDef, GridCellParams, DataGrid, useGridApiContext } from "@mui/x-data-grid";
-import { useState, useEffect, useCallback } from "react";
-
-interface StudyResult {
-  id: number;
-  name: string;
-  courseCode: string;
-  grade: string;
-  examDate: Date;
-  status: "draft" | "done" | "certified" | "obstacle" | "";
-}
-
-export const useStudyResults = () => {
-  const [studyResults, setStudyResults] = useState<StudyResult[]>([]);
-  const [newStudyResult, setNewStudyResult] = useState<StudyResult[]>([]);
-  const [saved, setSaved] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const fetchStudyResults = useCallback(async () => {
-    console.log("fetching study results");
-    setLoading(true);
-    try {
-      const response = await fetch("http://localhost:3001/results");
-      const data = await response.json();
-      setStudyResults(data);
-      setStudyResults(data);
-      setSaved(true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchStudyResults();
-  }, [fetchStudyResults]);
-
-  const saveStudyResults = useCallback(async () => {
-    setLoading(true);
-    try {
-      await fetch("http://localhost:3001/reg_results", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(studyResults),
-      });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setError(error);
-    } finally {
-      setSaved(true);
-      setLoading(false);
-    }
-  }, [studyResults]);
-
-  const resetChanges = useCallback(() => {
-    setStudyResults(newStudyResult);
-    setSaved(true);
-  }, [newStudyResult]);
-
-  return {
-    studyResults,
-    loading,
-    error,
-    saveStudyResults,
-    setSaved,
-    saved,
-    newStudyResult,
-    setNewStudyResult,
-    resetChanges,
-  };
-};
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useCallback, useState } from "react";
+import { useStudyResults, StudyResult } from "../contexts/study-results";
+import SchoolIcon from "@mui/icons-material/School";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import CloseIcon from "@mui/icons-material/Close";
+import TaskIcon from "@mui/icons-material/Task";
 
 export default function Results() {
-  const { studyResults, loading, error, setSaved } = useStudyResults();
-  const [rows, setRows] = useState<StudyResult[]>([]);
+  const { setChangedStudyResults, changedStudyResults, loading, error, studyResults } = useStudyResults();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<JSX.Element | null>();
+  const [actionOpen, setActionOpen] = useState(false);
+  const actions = [
+    { icon: <TaskIcon />, name: "Lägg till resultat", onClick: () => openAddResult() },
+    { icon: <PersonAddIcon />, name: "Lägg till student", onClick: () => openAddStudent() },
+    { icon: <SchoolIcon />, name: "Lägg till kurs", onClick: () => openAddCourse() },
+  ];
+
+  const handleActionClose = () => {
+    setActionOpen(false);
+  };
+
+  const openAddResult = () => {
+    console.log("Add result");
+    setModalOpen(true);
+    setModalContent(
+      <Paper
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "80vw",
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h4">Lägg till nytt resultat</Typography>
+          {/* close button */}
+          <IconButton
+            size="small"
+            color="secondary"
+            aria-label="close"
+            onClick={() => setModalOpen(false)}
+            sx={{ position: "absolute", top: 10, right: 10 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        {/* Student name */}
+        <Autocomplete
+          options={studyResults.map((result) => result.name)}
+          getOptionLabel={(option) => option}
+          renderInput={(params) => <TextField {...params} label="Student" required />}
+        />
+        {/* Course code */}
+        <Autocomplete
+          options={studyResults.map((result) => result.courseCode)}
+          getOptionLabel={(option) => option}
+          renderInput={(params) => <TextField {...params} label="Kurskod" required />}
+        />
+        {/* Grade */}
+        <Autocomplete
+          options={studyResults.map((result) => result.grade)}
+          getOptionLabel={(option) => option}
+          renderInput={(params) => <TextField {...params} label="Omdöme" required />}
+        />
+        {/* Exam date */}
+        <DatePicker
+          label="Examinationsdatum"
+          value={null}
+          onChange={() => {}}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        {/* Status */}
+        <Select defaultValue="draft">
+          <MenuItem value="draft">draft</MenuItem>
+          <MenuItem value="done">done</MenuItem>
+          <MenuItem value="certified">certified</MenuItem>
+          <MenuItem value="obstacle">obstacle</MenuItem>
+        </Select>
+
+        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+          <Button variant="contained" color="secondary" onClick={() => setModalOpen(false)}>
+            Avbryt
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => setModalOpen(false)}>
+            Spara
+          </Button>
+        </Box>
+      </Paper>
+    );
+  };
+
+  const openAddStudent = () => {
+    // TODO
+  };
+
+  const openAddCourse = () => {
+    // TODO
+  };
+
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70, editable: false },
     { field: "courseCode", headerName: "Kurskod", width: 130, editable: false },
@@ -96,12 +139,12 @@ export default function Results() {
             sx={{
               backgroundColor:
                 params.value === "draft"
-                  ? "grey"
+                  ? "#bf7d3a" // draft
                   : params.value === "done"
-                  ? "green"
+                  ? "#3abf3a" // green
                   : params.value === "certified"
-                  ? "blue"
-                  : "red",
+                  ? "#3abfbf" // blue
+                  : "#bf3a3a", // red
               color: "primary.contrastText",
               padding: "0.2rem 0.5rem",
               borderRadius: "0.5rem",
@@ -115,14 +158,19 @@ export default function Results() {
     },
   ];
 
-  useEffect(() => {
-    setRows(studyResults);
-    if (JSON.stringify(rows) !== JSON.stringify(studyResults)) {
-      setSaved(true);
-    } else {
-      setSaved(false);
-    }
-  }, [studyResults, rows]);
+  const processRowUpdate = useCallback(
+    (newRow: StudyResult) => {
+      const newRows = changedStudyResults.map((row) => {
+        if (row.id === newRow.id) {
+          return newRow;
+        }
+        return row;
+      });
+      setChangedStudyResults(newRows);
+      return newRow;
+    },
+    [changedStudyResults]
+  );
 
   return (
     <Box
@@ -162,7 +210,7 @@ export default function Results() {
         </svg>
       ) : (
         <DataGrid
-          rows={rows}
+          rows={changedStudyResults}
           columns={columns}
           checkboxSelection
           experimentalFeatures={{
@@ -170,8 +218,38 @@ export default function Results() {
           }}
           disableColumnMenu
           disableColumnFilter
+          processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={console.log}
         />
       )}
+      {modalOpen && (
+        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+          {modalContent ? modalContent : <Typography variant="h4">Modal content</Typography>}
+        </Modal>
+      )}
+      <Box sx={{ height: 330, flexGrow: 1 }}>
+        <Backdrop open={actionOpen} />
+        <SpeedDial
+          ariaLabel="SpeedDial tooltip example"
+          sx={{ position: "absolute", bottom: 69, right: 16 }}
+          icon={<SpeedDialIcon />}
+          onClose={() => setActionOpen(false)}
+          onOpen={() => {
+            setActionOpen(true);
+          }}
+          open={actionOpen}
+        >
+          {actions.map((action) => (
+            <SpeedDialAction
+              key={action.name}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              tooltipOpen
+              onClick={() => action.onClick()}
+            />
+          ))}
+        </SpeedDial>
+      </Box>
     </Box>
   );
 }
@@ -184,7 +262,6 @@ const SelectEditCell = ({ id, field, value }: GridCellParams) => {
   };
   return (
     <Select value={value} defaultOpen onChange={handleChange}>
-      <MenuItem value=""></MenuItem>
       <MenuItem value="draft">draft</MenuItem>
       <MenuItem value="done">done</MenuItem>
       <MenuItem value="certified">certified</MenuItem>
