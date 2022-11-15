@@ -1,105 +1,44 @@
-import { useEffect, useState } from 'react'
 import {
-  Box,
-  Text,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
-  Container,
-  Button,
-  Select,
-  Input,
-  ButtonGroup,
-} from '@chakra-ui/react'
+  ThemeProvider,
+  CssBaseline,
+  useMediaQuery,
+  createTheme,
+} from "@mui/material";
+import { createContext, useContext, useMemo } from "react";
+import Header from "./components/Header";
+import Results from "./components/Results";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const ColorModeContext = createContext({ toggleColorMode: () => {} });
+
 function App() {
-  interface LadokObject {
-    id: number
-    socialSecurity: string
-    courseCode: string;
-    courseModule: string;
-    grade: string;
-    date: string;
-    status: "draft" | "done" | "certified" | "obstacle"
-  }
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  const [ladok, setLadok] = useState<LadokObject[]>([])
+  const colorMode = useContext(ColorModeContext);
 
-  useEffect(() => {
-    fetch('http://localhost:3001/results').then(res => res.json()).then(setLadok)
-    console.log(ladok)
-  }, [])
-
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? "dark" : "light",
+          primary: {
+            main: "#966A1D",
+          },
+          secondary: {
+            main: "#FFFFFF",
+          },
+        },
+      }),
+    [prefersDarkMode]
+  );
   return (
-    <Box padding="2">
-      <Box display="flex" flexDirection="row" justifyContent="space-between">
-        <Box>
-          <Text marginBottom="2" fontWeight="bold">Markera</Text>
-          <ButtonGroup variant="outline" spacing="2">
-            <Button>Alla</Button>
-            <Button>Betygsatta</Button>
-            <Button>Inga</Button>
-          </ButtonGroup>
-        </Box>
-        <Box>
-
-          <Text marginBottom="2" fontWeight="bold">Datum för markerade</Text>
-          <Box display="flex" flexDirection="row">
-            <Input
-              placeholder="Datum"
-              size="md"
-              type="date"
-            />
-            <Button>Sätt datum</Button>
-          </Box>
-        </Box>
-        <Box display="flex" flexDirection="row">
-          <Text>Spara som</Text>
-          <Select placeholder='Select option'>
-            {
-              ["draft", "done", "certified", "obstacle"].map((status) => (
-                <option key={status} value={status}>{status}</option>
-              ))
-            }
-          </Select>
-          <Button>Överför</Button>
-        </Box>
-      </Box>
-      <TableContainer>
-        <Table variant='simple'>
-          <Thead>
-            <Tr>
-              <Th>Namn</Th>
-              <Th>Omdöme</Th>
-              <Th>Betyg i Canvas</Th>
-              <Th>Betyg i Ladok</Th>
-              <Th>Examinationsdatum</Th>
-              <Th>Status</Th>
-              <Th>Information</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {ladok.map((item, index) => (
-              <Tr key={index}>
-                <Td>{item.socialSecurity}</Td>
-                <Td>{item.courseCode}</Td>
-                <Td>{item.courseModule}</Td>
-                <Td>{item.grade}</Td>
-                <Td>{item.date}</Td>
-                <Td>{item.status}</Td>
-                <Td></Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </Box>
-  )
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Header colorMode={colorMode} />
+      <Results />
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
+

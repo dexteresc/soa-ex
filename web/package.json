@@ -1,5 +1,5 @@
 {
-  "name": "vite-project",
+  "name": "web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,17 +9,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.3.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "framer-motion": "^6.5.1",
+    "@fontsource/roboto": "^4.5.8",
+    "@mui/icons-material": "^5.10.14",
+    "@mui/material": "^5.10.14",
+    "@mui/x-data-grid": "^5.17.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
+    "@typescript-eslint/eslint-plugin": "^5.43.0",
+    "@typescript-eslint/parser": "^5.43.0",
     "@vitejs/plugin-react": "^2.2.0",
+    "eslint": "^8.27.0",
+    "eslint-plugin-react": "^7.31.10",
     "typescript": "^4.6.4",
     "vite": "^3.2.3"
   }
