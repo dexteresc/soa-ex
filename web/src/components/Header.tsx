@@ -10,7 +10,7 @@ export default function Header({ toggleColorMode }: { toggleColorMode: () => voi
   return (
     <AppBar position="static" color="transparent" variant="outlined" elevation={0}>
       <Toolbar>
-        <Typography flexGrow={1} variant="h1" fontSize={24}>
+        <Typography flexGrow={1} variant="h1" fontSize={24} fontWeight={500}>
           Examinationsresultat
         </Typography>
         <Button variant="contained" disabled={!saved} onClick={saveStudyResults}>
