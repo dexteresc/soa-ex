@@ -1,4 +1,4 @@
-import { ThemeProvider, CssBaseline, createTheme, useMediaQuery } from "@mui/material";
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import Results from "./components/Results";
@@ -8,9 +8,8 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 function App() {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [mode, setMode] = useState<"light" | "dark">(
-    localStorage.getItem("mode") ?? prefersDarkMode ? "dark" : "light"
+    (localStorage.getItem("mode") ? localStorage.getItem("mode") : "light") as "light" | "dark"
   );
   const toggleColorMode = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
@@ -32,7 +31,6 @@ function App() {
   );
 
   useEffect(() => {
-    // Save to localStorage
     localStorage.setItem("mode", mode);
   }, [mode]);
 
