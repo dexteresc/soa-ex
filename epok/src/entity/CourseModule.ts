@@ -1,23 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  ManyToOne,
+} from "typeorm";
+import { Course } from "./Course";
 
 @Entity()
 export class CourseModule {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column()
+  moduleName: string;
 
-    @Column()
-    courseCode: string
+  @Column()
+  moduleCode: string;
 
-    @Column()
-    courseName: string
+  @Column()
+  credits: string;
 
-    @Column()
-    courseModule: string
+  @ManyToOne((type) => Course, (course) => course.modules)
+  course: Course;
 
-    @Column({
-        default: "true"
-    })
-    active: boolean
+  @Column({
+    default: true,
+  })
+  active: boolean;
 }
-
