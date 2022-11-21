@@ -1,26 +1,29 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export class StudyResult {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column()
+  studentId: string;
 
-    @Column()
-    socialSecurity: string
+  @Column()
+  courseCode: string;
 
-    @Column()
-    courseCode: string;
+  @Column()
+  courseModule: string;
 
-    @Column()
-    courseModule: string;
+  @Column({
+    default: null,
+  })
+  grade?: string;
 
-    @Column()
-    grade: string;
+  @Column()
+  date?: string | null;
 
-    @Column()
-    date: string;
-
-    @Column()
-    status: "draft" | "done" | "certified" | "obstacle"
+  @Column({
+    default: null,
+  })
+  status?: "draft" | "done" | "certified" | "obstacle";
 }
