@@ -15,10 +15,16 @@ AppDataSource.initialize()
     if (!studentExists) {
       const student = new Student();
       student.studentId = "jondoe-0";
-      student.socialSecurity = "123456789";
+      student.socialSecurity = "19900101-1234";
       student.name = "John Doe";
+      const student2 = new Student();
+      student2.studentId = "foobar-0";
+      student2.socialSecurity = "19900101-1235";
+      student2.name = "Foo Bar";
+
       console.log("Saving student...");
-      await AppDataSource.manager.save(student);
+
+      await AppDataSource.manager.save([student, student2]);
       console.log("Student saved!");
     }
 
@@ -60,21 +66,21 @@ AppDataSource.initialize()
       res.send(students);
     });
 
-    // Get student by socialSecurity route
-    app.get("/student/:socialSecurity", async (req, res) => {
-      console.log(req.params.socialSecurity);
+    // Get student by ideal (studentId) route
+    app.get("/student/:ideal", async (req, res) => {
+      const ideal = req.params.ideal;
       const student = await AppDataSource.manager.findOne(Student, {
-        where: { socialSecurity: req.params.socialSecurity },
+        where: { studentId: ideal },
       });
-      if (!student) {
-        res.status(404).send("Student not found");
+      if (student) {
+        res.send(student);
         return;
       }
-      res.send(student);
+      res.status(404).send("Student not found");
     });
 
     app.listen(port, () => {
-      console.log(`Example app listening on port ${port}!`);
+      console.log(`Student-its API listening on port ${port}!`);
     });
   })
   .catch((error) => console.log(error));
