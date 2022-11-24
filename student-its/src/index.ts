@@ -8,11 +8,9 @@ AppDataSource.initialize()
   .then(async () => {
     // Create example student then delete it and log every step
     // if student with socailSecurity == 123456789 exists dont create
-    const studentExists = await AppDataSource.manager.findOne(Student, {
-      where: { socialSecurity: "123456789" },
-    });
+    const studentExists = await AppDataSource.manager.find(Student);
 
-    if (!studentExists) {
+    if (studentExists.length === 0) {
       const student = new Student();
       student.studentId = "jondoe-0";
       student.socialSecurity = "19900101-1234";
@@ -50,13 +48,14 @@ AppDataSource.initialize()
     app.post("/student", async (req, res) => {
       const student = new Student();
       if (!req.body.studentId || !req.body.socialSecurity || !req.body.name) {
+        // Check if all fields are filled
         res.status(400).send("Missing parameters");
         return;
       }
       student.studentId = req.body.studentId;
       student.socialSecurity = req.body.socialSecurity;
       student.name = req.body.name;
-      await AppDataSource.manager.save(student);
+      await AppDataSource.manager.save(student); // Save student to database
       res.send(student);
     });
 

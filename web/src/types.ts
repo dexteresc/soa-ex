@@ -6,11 +6,12 @@ export interface Student {
 
 export interface StudyResult {
   id?: number;
+  studentId: string;
   name: string;
   courseCode: string;
   courseModule: string;
   grade: string | null;
-  examDate: Date | string | null;
+  date: Date | string | null;
   status: "draft" | "done" | "certified" | "obstacle" | null;
 }
 

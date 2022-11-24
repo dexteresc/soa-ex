@@ -137,16 +137,13 @@ AppDataSource.initialize()
             (studyResult) =>
               typeof studyResult.studentId === "string" &&
               typeof studyResult.courseCode === "string" &&
-              typeof studyResult.courseModule === "string" &&
-              typeof studyResult.grade === "string" &&
-              typeof studyResult.date === "string" &&
-              typeof studyResult.status === "string"
+              typeof studyResult.courseModule === "string"
           )
         ) {
-          // log keys and types
-          studyResults[0].forEach((key, value) => {
-            console.log(key, typeof value);
-          });
+          // log all keys
+          console.log(
+            studyResults.map((studyResult) => Object.keys(studyResult))
+          );
           res
             .status(400)
             .send(
@@ -154,7 +151,7 @@ AppDataSource.initialize()
             );
           return;
         }
-        // update stufy results in database
+        // update stuff results in database
         for (let studyResult of studyResults) {
           const studyResultRepository =
             AppDataSource.getRepository(StudyResult);
@@ -195,11 +192,12 @@ AppDataSource.initialize()
 
           responseObject.push({
             id: studyResult.id,
+            studentId: studyResult.studentId,
             courseCode: studyResult.courseCode,
             courseModule: studyResult.courseModule,
             name: student.name,
             grade: studyResult.grade,
-            examDate: studyResult.date,
+            date: studyResult.date,
             status: studyResult.status,
           });
         }
@@ -236,11 +234,12 @@ AppDataSource.initialize()
           if (student) {
             responseObject.push({
               id: studyResult.id,
+              studentId: studyResult.studentId,
               courseCode: studyResult.courseCode,
               courseModule: studyResult.courseModule,
               name: student.name,
               grade: studyResult.grade,
-              examDate: studyResult.date,
+              date: studyResult.date,
               status: studyResult.status,
             });
           } else {

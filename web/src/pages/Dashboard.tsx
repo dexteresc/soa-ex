@@ -65,12 +65,11 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
         const newData = data.map((result) => {
           return {
             ...result,
-            examDate: result.examDate ? new Date(result.examDate) : null,
+            date: result.date ? new Date(result.date) : null,
           };
         });
 
         setResults(newData);
-        setChangedResults(newData);
         setGridLoading(false);
         console.log("Results:", newData);
       });
@@ -79,18 +78,21 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
 
   const processRowUpdate = useCallback(
     (newRow: StudyResult) => {
-      const newRows = changedResults.map((row) => {
-        if (row.id === newRow.id) {
-          return newRow;
-        }
-        return row;
-      });
-      setChangedResults(newRows);
+      // If the row is already in the changedResults array, update it instead of adding it
+      const index = changedResults.findIndex((result) => result.studentId === newRow.studentId);
+      if (index !== -1) {
+        const newChangedResults = [...changedResults];
+        newChangedResults[index] = newRow;
+        setChangedResults(newChangedResults);
+      } else {
+        setChangedResults((prev) => [...prev, newRow]);
+      }
       return newRow;
     },
     [changedResults]
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onProcessRowUpdateError = (error: any) => {
     console.log("Error:", error);
   };
@@ -105,7 +107,7 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
     const transformedData: StudyResult[] = changedResults.map((result) => {
       return {
         ...result,
-        examDate: typeof result.examDate === "string" ? result.examDate : result.examDate?.toISOString() || "",
+        date: typeof result.date === "string" ? result.date : result.date?.toISOString() || "",
       };
     });
     setGridLoading(true);
@@ -113,21 +115,28 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
     regResults(transformedData).then((data) => {
       console.log("Save result:", data);
       setGridLoading(false);
+      setChangedResults([]);
       setSaved(true);
     });
   };
 
-  // Check for changes
+  const handleReset = () => {
+    setChangedResults([]);
+    handleViewResults();
+    setSaved(true);
+  };
+
+  // Checks if the row has been changed
   useEffect(() => {
-    if (results.length === changedResults.length) {
-      const changed = results.some((result, index) => {
-        return result.examDate !== changedResults[index].examDate;
-      });
-      setSaved(!changed);
+    if (changedResults.length === 0) {
+      setSaved(true);
     } else {
       setSaved(false);
     }
-  }, [results, changedResults]);
+  }, [changedResults]);
+
+  // Todo: Handle reset
+  // ? The value provided to Autocomplete is invalid.
 
   return (
     <>
@@ -146,7 +155,7 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
           <Autocomplete
             fullWidth
             value={selectedCourse}
-            onChange={(event: any, newValue: Course | null) => {
+            onChange={(event: React.SyntheticEvent<Element, Event>, newValue: Course | null) => {
               setSelectedCourse(newValue);
             }}
             inputValue={courseInputValue}
@@ -162,7 +171,7 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
           <Autocomplete
             fullWidth
             value={selectedCourseModule}
-            onChange={(event: any, newValue: CourseModule | null) => {
+            onChange={(event: React.SyntheticEvent<Element, Event>, newValue: CourseModule | null) => {
               setSelectedCourseModule(newValue);
             }}
             inputValue={courseModuleInputValue}
@@ -199,7 +208,7 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
               Spara
             </Button>
             {/* Reset changes */}
-            <Button color="error" sx={{ marginRight: 2 }} onClick={() => setChangedResults(results)} disabled={saved}>
+            <Button color="error" sx={{ marginRight: 2 }} onClick={handleReset} disabled={saved}>
               Återställ
             </Button>
 
@@ -215,7 +224,7 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
             { field: "name", headerName: "Namn", width: 200, flex: 1 },
             { field: "grade", headerName: "Betyg", width: 100, editable: true },
             {
-              field: "examDate",
+              field: "date",
               headerName: "Examinationsdatum",
               width: 200,
               editable: true,
@@ -259,8 +268,6 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
           ]}
           pageSize={5}
           rowsPerPageOptions={[5]}
-          checkboxSelection
-          disableSelectionOnClick
           sx={{ flexGrow: 1, height: "100%", borderRadius: 0, border: 0 }}
           loading={gridLoading}
           experimentalFeatures={{
@@ -283,7 +290,7 @@ const SelectEditCell = ({ id, field, value }: GridCellParams) => {
     apiRef.current.setEditCellValue({ id, field, value: newValue });
   };
   return (
-    <Select value={value} defaultOpen onChange={handleChange}>
+    <Select value={value} fullWidth defaultOpen onChange={handleChange}>
       <MenuItem value="draft">Utkast</MenuItem>
       <MenuItem value="done">Klar</MenuItem>
       <MenuItem value="certified">Certifierad</MenuItem>
