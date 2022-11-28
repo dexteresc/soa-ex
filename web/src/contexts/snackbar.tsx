@@ -23,7 +23,9 @@ export const SnackbarProvider = ({ children }: { children: React.ReactNode }) =>
           onClose={handleCloseSnackbar}
           autoHideDuration={6000}
         >
-          <Alert {...snackbar} onClose={handleCloseSnackbar} />
+          <Alert {...snackbar} onClose={handleCloseSnackbar}>
+            {snackbar.children}
+          </Alert>
         </Snackbar>
       )}
     </SnackbarContext.Provider>
