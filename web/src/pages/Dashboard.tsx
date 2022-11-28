@@ -16,30 +16,44 @@ import { useCallback, useEffect, useState } from "react";
 import { getCourseModuleByCode, getCourses } from "../api/epok";
 import { getResultsByCourseModule, regResults } from "../api/ladok";
 import { Course, CourseModule, StudyResult } from "../types";
+import { useSnackbar } from "../contexts/snackbar";
 
 function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
+  const { setSnackbar } = useSnackbar();
+
   const [courses, setCourses] = useState<Course[]>([]);
+
   const [courseInputValue, setCourseInputValue] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+
   const [courseModules, setCourseModules] = useState<CourseModule[]>([]);
+
   const [courseModuleInputValue, setCourseModuleInputValue] = useState("");
   const [selectedCourseModule, setSelectedCourseModule] = useState<CourseModule | null>(null);
-  const [courseLoading, setCourseLoading] = useState(false);
-  const [courseModuleLoading, setCourseModuleLoading] = useState(false);
 
   const [results, setResults] = useState<StudyResult[]>([]);
   const [changedResults, setChangedResults] = useState<StudyResult[]>([]);
-  const [gridLoading, setGridLoading] = useState(false);
-
   const [saved, setSaved] = useState(true);
+
+  const [courseLoading, setCourseLoading] = useState(false);
+  const [courseModuleLoading, setCourseModuleLoading] = useState(false);
+  const [gridLoading, setGridLoading] = useState(false);
 
   useEffect(() => {
     setCourseLoading(true);
-    getCourses().then((data) => {
-      setCourses(data);
-      setCourseLoading(false);
-      console.log("Courses:", data);
-    });
+    getCourses()
+      .then((data) => {
+        setCourses(data);
+        setCourseLoading(false);
+        console.log("Courses:", data);
+      })
+      .catch((err) => {
+        setCourseLoading(false);
+        setSnackbar({
+          children: err.message,
+          severity: "error",
+        });
+      });
   }, []);
 
   useEffect(() => {
@@ -47,11 +61,19 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
     setCourseModules([]);
     setCourseModuleLoading(true);
     if (selectedCourse) {
-      getCourseModuleByCode(selectedCourse.courseCode).then((data) => {
-        setCourseModules(data);
-        setCourseModuleLoading(false);
-        console.log("CourseModules:", data);
-      });
+      getCourseModuleByCode(selectedCourse.courseCode)
+        .then((data) => {
+          setCourseModules(data);
+          setCourseModuleLoading(false);
+          console.log("CourseModules:", data);
+        })
+        .catch((err) => {
+          setCourseModuleLoading(false);
+          setSnackbar({
+            children: err.message,
+            severity: "error",
+          });
+        });
     } else {
       setCourseModuleInputValue("");
       setSelectedCourseModule(null);
@@ -61,18 +83,26 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
   const handleViewResults = () => {
     if (selectedCourseModule?.moduleCode && selectedCourse?.courseCode) {
       setGridLoading(true);
-      getResultsByCourseModule(selectedCourse.courseCode, selectedCourseModule.moduleCode).then((data) => {
-        const newData = data.map((result) => {
-          return {
-            ...result,
-            date: result.date ? new Date(result.date) : null,
-          };
-        });
+      getResultsByCourseModule(selectedCourse.courseCode, selectedCourseModule.moduleCode)
+        .then((data) => {
+          const newData = data.map((result) => {
+            return {
+              ...result,
+              date: result.date ? new Date(result.date) : null,
+            };
+          });
 
-        setResults(newData);
-        setGridLoading(false);
-        console.log("Results:", newData);
-      });
+          setResults(newData);
+          setGridLoading(false);
+          console.log("Results:", newData);
+        })
+        .catch((err) => {
+          setGridLoading(false);
+          setSnackbar({
+            children: err.message,
+            severity: "error",
+          });
+        });
     }
   };
 
@@ -124,6 +154,10 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
     setChangedResults([]);
     handleViewResults();
     setSaved(true);
+    setSnackbar({
+      children: "Återställt",
+      severity: "success",
+    });
   };
 
   // Checks if the row has been changed
@@ -212,7 +246,16 @@ function Results({ toggleColorMode }: { toggleColorMode: () => void }) {
               Återställ
             </Button>
 
-            <Button color="inherit" onClick={toggleColorMode}>
+            <Button
+              color="inherit"
+              onClick={() => {
+                toggleColorMode();
+                setSnackbar({
+                  children: "Theme changed",
+                  severity: "success",
+                });
+              }}
+            >
               Ändra tema
             </Button>
           </Toolbar>
